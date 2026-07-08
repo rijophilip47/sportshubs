@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Watch Live - SportsHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1220;
+    --ink-2:#0E1626;
+    --card:#131C2E;
+    --card-hover:#182236;
+    --pitch:#1B7A43;
+    --pitch-bright:#23A155;
+    --amber:#F2B705;
+    --white:#F5F7FA;
+    --gray:#8CA0B3;
+    --line:rgba(245,247,250,0.08);
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--white);
+    font-family:'Inter',Arial,sans-serif;
+    font-size:14px;
+    line-height:1.55;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -5%, rgba(27,122,67,0.25), transparent 60%),
+      radial-gradient(ellipse 700px 400px at 100% 10%, rgba(242,183,5,0.10), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+  a{color:inherit;text-decoration:none;}
+  .topbar{
+    height:54px;
+    background:rgba(14,22,38,.9);
+    border-bottom:1px solid var(--line);
+    position:relative;
+    z-index:2;
+  }
+  .brand{
+    max-width:1080px;
+    height:54px;
+    margin:0 auto;
+    padding:0 18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'Anton',sans-serif;
+    font-size:24px;
+    letter-spacing:.04em;
+  }
+  .brand-bulb{
+    width:12px;
+    height:12px;
+    border-radius:2px;
+    background:var(--amber);
+    box-shadow:0 0 12px 2px rgba(242,183,5,.7);
+  }
+  .brand span:last-child{color:var(--pitch-bright);}
+  .site{
+    position:relative;
+    z-index:1;
+    max-width:1080px;
+    margin:24px auto 60px;
+    display:grid;
+    grid-template-columns:minmax(0,720px) 300px;
+    gap:22px;
+    align-items:start;
+  }
+  main,.sidebar,.search-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+  }
+  main{padding:20px;}
+  .sidebar{padding:20px;}
+  .breadcrumb{
+    color:var(--pitch-bright);
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  h1{
+    font-family:'Anton',sans-serif;
+    font-size:30px;
+    line-height:1.1;
+    font-weight:400;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    margin-bottom:12px;
+  }
+  .team-mark{
+    width:72px;
+    height:72px;
+    border:1px solid rgba(245,247,250,.22);
+    border-radius:50%;
+    overflow:hidden;
+    display:grid;
+    place-items:center;
+    margin:4px 0 18px;
+    box-shadow:0 10px 24px rgba(0,0,0,.18);
+    background:linear-gradient(135deg, var(--team-color), rgba(255,255,255,.12));
+    color:var(--white);
+    font-family:'JetBrains Mono',monospace;
+    font-size:22px;
+    font-weight:800;
+    text-shadow:0 2px 8px rgba(0,0,0,.35);
+  }
+  .channel-table{
+    width:100%;
+    border-collapse:collapse;
+    border:1px solid var(--line);
+    background:var(--ink-2);
+    margin-bottom:18px;
+  }
+  .channel-table th{
+    background:linear-gradient(90deg, var(--pitch), var(--pitch-bright));
+    color:var(--white);
+    padding:17px 10px;
+    text-align:center;
+    text-transform:uppercase;
+    font-size:13px;
+  }
+  .channel-table td{
+    border:1px solid var(--line);
+    padding:14px 12px;
+    text-align:center;
+    font-weight:700;
+  }
+  .channel-table .head-cell{
+    background:var(--amber);
+    color:#1a1400;
+    text-transform:uppercase;
+    font-size:12px;
+  }
+  .channel-table .value-cell{background:var(--card-hover);}
+  .ad-tower{
+    width:145px;
+    height:250px;
+    margin:0 auto;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    text-align:center;
+    font-weight:800;
+    background:linear-gradient(160deg,#142954,#021024 55%,#0c9b62);
+    border:1px solid var(--line);
+    border-radius:8px;
+  }
+  .ad-small{
+    width:130px;
+    height:210px;
+    margin:16px auto;
+    display:grid;
+    place-items:center;
+    text-align:center;
+    color:#fff;
+    font-weight:800;
+    background:linear-gradient(160deg,#101936,#151515 58%,#0aa95c);
+    border-radius:8px;
+  }
+  .server-box{
+    background:#030507;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:18px 16px;
+    margin:14px 0 18px;
+    text-align:center;
+  }
+  .server-title{
+    color:var(--white);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 12px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    font-size:11px;
+    text-transform:uppercase;
+    margin-bottom:12px;
+  }
+  .server-list{
+    list-style:none;
+    display:grid;
+    gap:8px;
+    max-width:360px;
+    margin:0 auto;
+  }
+  .server-list a{
+    display:block;
+    color:var(--pitch-bright);
+    font-size:12px;
+    font-weight:800;
+  }
+  .server-list span{
+    display:block;
+    color:var(--gray);
+    font-size:11px;
+    font-weight:600;
+  }
+  .copy h2{
+    color:var(--amber);
+    font-size:14px;
+    margin-bottom:8px;
+  }
+  .copy p{
+    color:var(--gray);
+    font-size:13px;
+  }
+  .search-card{
+    margin-top:18px;
+    padding:14px;
+  }
+  .search-card label{
+    display:block;
+    color:var(--gray);
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+    text-transform:uppercase;
+  }
+  .search-row{
+    display:flex;
+    gap:8px;
+  }
+  .search-row input{
+    flex:1;
+    min-width:0;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    background:var(--ink-2);
+    color:var(--white);
+  }
+  .search-row button{
+    border:0;
+    border-radius:7px;
+    padding:10px 14px;
+    background:var(--amber);
+    color:#1a1400;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .sidebar h2{
+    color:var(--gray);
+    font-size:13px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .popular-link{
+    display:block;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+    font-size:12px;
+    font-weight:700;
+  }
+  .popular-link:hover{color:var(--pitch-bright);}
+  .back-link{
+    display:inline-flex;
+    margin-top:14px;
+    color:var(--pitch-bright);
+    font-size:13px;
+    font-weight:700;
+  }
+  @media (max-width:860px){
+    .site{grid-template-columns:1fr;}
+    main,.sidebar,.search-card{margin:0 12px;}
+  }
+  @media (max-width:560px){
+    main{padding:14px 10px;}
+    h1{font-size:24px;}
+    .channel-table td{padding:11px 6px;font-size:12px;}
+    .search-row{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-bulb"></span><span>SPORTS</span><span>HUB</span></div>
+</div>
+
+<div class="site">
+  <main id="watchRoot"></main>
+  <aside class="sidebar">
+    <h2>Popular Posts</h2>
+    <div id="popularPosts"></div>
+    <div class="ad-small">XM<br>$25,000<br>Weekly Demo<br>Competition</div>
+  </aside>
+</div>
+
+<script src="data.js"></script>
+<script>
+  function fallbackSlug(match){
+    return match.slug || `${match.home}-${match.away}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
+  function getSelectedMatch(){
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get('match');
+    return MATCHES.find(match => fallbackSlug(match) === requested) || MATCHES[0];
+  }
+
+  function getSelectedSide(){
+    const params = new URLSearchParams(window.location.search);
+    return params.get('team') === 'away' ? 'away' : 'home';
+  }
+
+  function getTeamView(match){
+    const side = getSelectedSide();
+    return {
+      side,
+      name: side === 'away' ? match.away : match.home,
+      abbr: side === 'away' ? match.awayAbbr : match.homeAbbr,
+      color: side === 'away' ? match.awayColor : match.homeColor
+    };
+  }
+
+  function getChannelInfo(match, teamView){
+    return match.channelInfo || {
+      team: teamView.name,
+      region: teamView.name,
+      satellite: 'Local Provider',
+      channelName: match.channel || 'To be announced',
+      frequency: 'Check local listing',
+      symbolRate: 'Provider dependent',
+      encryption: 'Subscription may apply',
+      language: 'Local broadcast',
+      backupChannel: 'SportsHub live updates',
+      note: `${match.home} vs ${match.away} live channel information will be updated when the official broadcaster confirms final match coverage.`
+    };
+  }
+
+  function getBroadcastLinks(match, info){
+    if(info.broadcastLinks && info.broadcastLinks.length){
+      return info.broadcastLinks;
+    }
+
+    return [1, 2, 3, 4].map(server => ({
+      label: `Link ${server}: ${match.home} vs ${match.away}`,
+      url: `live-broadcast.html?match=${fallbackSlug(match)}&server=${server}`,
+      description: `SportsHub stream server ${server}`
+    }));
+  }
+
+  function row(left, right){
+    return `<tr><td class="value-cell">${left}</td><td class="value-cell">${right}</td></tr>`;
+  }
+
+  function renderWatch(match){
+    const teamView = getTeamView(match);
+    const info = getChannelInfo(match, teamView);
+    const broadcastLinks = getBroadcastLinks(match, info);
+    document.title = `${info.team} Channel Info - SportsHub`;
+    document.getElementById('watchRoot').innerHTML = `
+      <div class="breadcrumb">Home / Live TV / ${info.team} Channel Info</div>
+      <h1>${info.team} Channel Info</h1>
+      <div class="team-mark" style="--team-color:${teamView.color};" aria-label="${teamView.name} team mark">${teamView.abbr}</div>
+
+      <table class="channel-table">
+        <tr><th colspan="2">${info.team} Channel Info</th></tr>
+        <tr><td class="head-cell">Satellite</td><td class="head-cell">Channel</td></tr>
+        ${row(info.satellite, info.channelName)}
+        ${row(info.frequency, info.symbolRate)}
+        ${row(info.encryption, info.language)}
+        <tr><td colspan="2"><div class="ad-tower">+600%<br>BONUS<br><span style="font-size:12px;font-weight:600;">Matchday Offer</span></div></td></tr>
+      </table>
+
+      <div class="ad-small">XM<br>$25,000<br>Weekly Demo<br>Competition</div>
+
+      <section class="server-box">
+        <div class="server-title">Refresh Links</div>
+        <ul class="server-list">
+          ${broadcastLinks.map(link => `<li><a href="${link.url}">${link.label}</a><span>${link.description}</span></li>`).join('')}
+        </ul>
+      </section>
+
+      <section class="copy">
+        <h2>${info.team}</h2>
+        <p>${info.note}</p>
+      </section>
+
+      <div class="search-card">
+        <label for="siteSearch">Search This Blog</label>
+        <div class="search-row">
+          <input id="siteSearch" type="search" placeholder="Search match or channel">
+          <button type="button">Search</button>
+        </div>
+      </div>
+
+      <a class="back-link" href="match-details.html?match=${fallbackSlug(match)}">Back to match details</a>
+    `;
+  }
+
+  function renderPopular(){
+    document.getElementById('popularPosts').innerHTML = POPULAR_POSTS.map(post => (
+      `<a class="popular-link" href="popular-posts.html?post=${post.slug}">${post.title}</a>`
+    )).join('');
+  }
+
+  renderWatch(getSelectedMatch());
+  renderPopular();
+</script>
+</body>
+</html>

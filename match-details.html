@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match Details - SportsHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1220;
+    --ink-2:#0E1626;
+    --card:#131C2E;
+    --card-hover:#182236;
+    --pitch:#1B7A43;
+    --pitch-bright:#23A155;
+    --amber:#F2B705;
+    --white:#F5F7FA;
+    --gray:#8CA0B3;
+    --line:rgba(245,247,250,0.08);
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--white);
+    font-family:'Inter',Arial,sans-serif;
+    font-size:14px;
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -5%, rgba(27,122,67,0.25), transparent 60%),
+      radial-gradient(ellipse 700px 400px at 100% 10%, rgba(242,183,5,0.10), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+  a{color:inherit;text-decoration:none;}
+  .topbar{
+    height:54px;
+    background:rgba(14,22,38,.9);
+    border-bottom:1px solid var(--line);
+    position:relative;
+    z-index:2;
+  }
+  .topbar::before{
+    content:"SPORTSHUB";
+    display:flex;
+    align-items:center;
+    max-width:1080px;
+    height:54px;
+    margin:0 auto;
+    padding:0 18px;
+    color:var(--white);
+    font-family:'Anton',sans-serif;
+    font-size:24px;
+    letter-spacing:.04em;
+  }
+  .topbar::after{
+    content:"";
+    position:absolute;
+    top:21px;
+    left:max(18px, calc((100vw - 1080px) / 2 + 18px));
+    width:12px;
+    height:12px;
+    border-radius:2px;
+    background:var(--amber);
+    box-shadow:0 0 12px 2px rgba(242,183,5,.7);
+    transform:translateX(-18px);
+  }
+  .site{
+    position:relative;
+    z-index:1;
+    max-width:1080px;
+    margin:24px auto 60px;
+    display:grid;
+    grid-template-columns:minmax(0,720px) 300px;
+    gap:22px;
+    align-items:start;
+  }
+  main,.sidebar{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+  }
+  main{
+    min-height:100vh;
+    padding:20px 20px 34px;
+  }
+  .sidebar{
+    margin-top:0;
+    padding:20px;
+    min-height:86px;
+  }
+  .breadcrumb{
+    color:var(--pitch-bright);
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  h1{
+    font-size:28px;
+    line-height:1.18;
+    font-family:'Anton',sans-serif;
+    font-weight:400;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .meta{
+    color:var(--gray);
+    font-size:11px;
+    margin-bottom:14px;
+  }
+  .match-poster{
+    min-height:310px;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:end;
+    gap:18px;
+    padding:34px 24px 22px;
+    color:#fff;
+    background:
+      radial-gradient(circle at 48% 18%, rgba(255,255,255,.95) 0 2px, transparent 3px),
+      radial-gradient(circle at 52% 24%, rgba(255,255,255,.85) 0 2px, transparent 3px),
+      radial-gradient(circle at 42% 30%, rgba(255,255,255,.75) 0 1px, transparent 3px),
+      linear-gradient(104deg, var(--home-color) 0 46%, #111 46% 54%, var(--away-color) 54% 100%);
+    border:1px solid rgba(245,247,250,.14);
+    border-radius:var(--radius);
+    overflow:hidden;
+    position:relative;
+  }
+  .match-poster::before{
+    content:"FIFA WORLD CUP 2026";
+    position:absolute;
+    top:28px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:28px;
+    font-weight:800;
+    text-align:center;
+    line-height:1;
+    text-shadow:0 2px 10px rgba(0,0,0,.45);
+  }
+  .poster-team{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    text-align:center;
+    min-width:0;
+  }
+  .poster-badge{
+    width:86px;
+    height:86px;
+    border:3px solid rgba(255,255,255,.84);
+    background:rgba(255,255,255,.18);
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:800;
+    font-size:24px;
+    box-shadow:0 12px 24px rgba(0,0,0,.26);
+  }
+  .poster-team strong{
+    font-size:29px;
+    line-height:1;
+    text-transform:uppercase;
+    text-shadow:0 3px 12px rgba(0,0,0,.55);
+    overflow-wrap:anywhere;
+  }
+  .poster-vs{
+    font-size:28px;
+    font-weight:800;
+    margin-bottom:25px;
+    color:#fff;
+    text-shadow:0 3px 12px rgba(0,0,0,.7);
+  }
+  .info-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:18px;
+    border:1px solid var(--line);
+    background:var(--ink-2);
+  }
+  .info-table th{
+    background:linear-gradient(90deg, var(--pitch), var(--pitch-bright));
+    color:var(--white);
+    padding:18px 10px;
+    font-weight:700;
+    text-align:center;
+  }
+  .info-table td{
+    border:1px solid var(--line);
+    padding:13px 12px;
+    text-align:center;
+    font-weight:700;
+    min-height:46px;
+  }
+  .label-cell{
+    background:#090f1b;
+    color:var(--white);
+    text-transform:uppercase;
+    font-size:12px;
+    width:50%;
+  }
+  .value-cell{
+    background:var(--card-hover);
+    color:var(--white);
+  }
+  .value-cell.highlight{
+    background:var(--pitch-bright);
+    color:#08170D;
+    text-transform:uppercase;
+  }
+  .watch-button{
+    display:inline-block;
+    background:var(--amber);
+    color:#1a1400;
+    border:1px solid rgba(242,183,5,.6);
+    border-radius:7px;
+    padding:10px 18px;
+    font-size:13px;
+    font-weight:800;
+    box-shadow:none;
+  }
+  .ad-tower{
+    width:145px;
+    height:250px;
+    margin:0 auto;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    text-align:center;
+    font-weight:800;
+    background:linear-gradient(160deg,#142954,#021024 55%,#0c9b62);
+    border:1px solid var(--line);
+    border-radius:8px;
+  }
+  .ad-small{
+    width:130px;
+    height:210px;
+    margin-top:18px;
+    display:grid;
+    place-items:center;
+    text-align:center;
+    color:#fff;
+    font-weight:800;
+    background:linear-gradient(160deg,#101936,#151515 58%,#0aa95c);
+    border-radius:8px;
+  }
+  .lineup-title{
+    color:var(--amber);
+    font-size:12px;
+    font-weight:700;
+    margin:14px 0 4px;
+  }
+  .lineup-box{
+    border:1px solid var(--line);
+    border-top:none;
+    padding:12px;
+    font-size:12px;
+    font-weight:600;
+    min-height:54px;
+    background:var(--ink-2);
+    color:var(--gray);
+  }
+  .sidebar h2{
+    font-size:13px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    margin-bottom:14px;
+    color:var(--gray);
+  }
+  .popular-link{
+    display:block;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+    font-size:12px;
+    font-weight:700;
+    color:var(--white);
+  }
+  .popular-link:hover{color:var(--pitch-bright);}
+  .back-link{
+    display:inline-flex;
+    margin-top:18px;
+    color:var(--pitch-bright);
+    font-size:13px;
+    font-weight:700;
+  }
+  @media (max-width:860px){
+    .site{grid-template-columns:1fr;}
+    .sidebar{margin:0 12px 24px;}
+    main{margin:0 12px;}
+  }
+  @media (max-width:560px){
+    main{padding:14px 10px 26px;}
+    h1{font-size:20px;}
+    .match-poster{
+      min-height:260px;
+      gap:8px;
+      padding:34px 10px 18px;
+    }
+    .match-poster::before{font-size:21px;}
+    .poster-badge{width:64px;height:64px;font-size:18px;}
+    .poster-team strong{font-size:19px;}
+    .poster-vs{font-size:20px;}
+    .info-table td{padding:10px 6px;font-size:12px;}
+  }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="site">
+  <main id="detailRoot"></main>
+  <aside class="sidebar">
+    <h2>Popular Posts</h2>
+    <div id="popularPosts"></div>
+    <div class="ad-small">XM<br>Get $30<br>Trading Bonus</div>
+  </aside>
+</div>
+
+<script src="data.js"></script>
+<script>
+  function fallbackSlug(match){
+    return match.slug || `${match.home}-${match.away}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
+  function getSelectedMatch(){
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get('match');
+    return MATCHES.find(match => fallbackSlug(match) === requested) || MATCHES[0];
+  }
+
+  function detailRow(label, value, options = {}){
+    const className = options.highlight ? 'value-cell highlight' : 'value-cell';
+    return `<tr><td class="label-cell">${label}</td><td class="${className}">${value}</td></tr>`;
+  }
+
+  function renderDetail(match){
+    const channel = match.channel || 'To be announced';
+    const matchType = match.matchType || match.group;
+    const watchLink = match.watchLink || `watch-live.html?match=${fallbackSlug(match)}&team=home`;
+    const homeLineup = match.homeLineup || 'Official lineup will be updated before kickoff.';
+    const awayLineup = match.awayLineup || 'Official lineup will be updated before kickoff.';
+
+    document.title = `${match.home} vs ${match.away} Live Channel and Match Info`;
+    document.getElementById('detailRoot').innerHTML = `
+      <div class="breadcrumb">Home / Football / World Cup 2026 / ${match.home} vs ${match.away}</div>
+      <h1>${match.home} vs ${match.away} Live Channel and Match Info</h1>
+      <div class="meta">SportsHub - ${match.date}</div>
+
+      <section class="match-poster" style="--home-color:${match.homeColor};--away-color:${match.awayColor};" aria-label="${match.home} versus ${match.away}">
+        <div class="poster-team">
+          <div class="poster-badge">${match.homeAbbr}</div>
+          <strong>${match.home}</strong>
+        </div>
+        <div class="poster-vs">VS</div>
+        <div class="poster-team">
+          <div class="poster-badge">${match.awayAbbr}</div>
+          <strong>${match.away}</strong>
+        </div>
+      </section>
+
+      <table class="info-table">
+        <tr><th colspan="2">${match.home} vs ${match.away}</th></tr>
+        ${detailRow(match.homeAbbr, match.awayAbbr, { highlight: true })}
+        ${detailRow('Match', `${match.home}<br>vs<br>${match.away}`)}
+        ${detailRow('Type', matchType)}
+        ${detailRow('Channel', channel)}
+        ${detailRow('Date', match.date)}
+        ${detailRow('Time', match.time)}
+        ${detailRow('Stadium', match.stadium)}
+        ${detailRow('Watch Live', `<a class="watch-button" href="${watchLink}">CLICK HERE</a>`)}
+        <tr><td colspan="2"><div class="ad-tower">+600%<br>BONUS<br><span style="font-size:12px;font-weight:600;">Matchday Offer</span></div></td></tr>
+        ${detailRow('Lineup', match.home, { highlight: true })}
+      </table>
+      <div class="lineup-title">${match.home} Lineup</div>
+      <div class="lineup-box">${homeLineup}</div>
+
+      <table class="info-table" style="margin-top:0;border-top:none;">
+        ${detailRow('Lineup', match.away, { highlight: true })}
+      </table>
+      <div class="lineup-title">${match.away} Lineup</div>
+      <div class="lineup-box">${awayLineup}</div>
+
+      <a class="back-link" href="index.html">Back to fixtures</a>
+    `;
+  }
+
+  function renderPopular(){
+    document.getElementById('popularPosts').innerHTML = POPULAR_POSTS.map(post => (
+      `<a class="popular-link" href="popular-posts.html?post=${post.slug}">${post.title}</a>`
+    )).join('');
+  }
+
+  renderDetail(getSelectedMatch());
+  renderPopular();
+</script>
+</body>
+</html>

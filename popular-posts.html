@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Popular Posts - SportsHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1220;
+    --ink-2:#0E1626;
+    --card:#131C2E;
+    --card-hover:#182236;
+    --pitch:#1B7A43;
+    --pitch-bright:#23A155;
+    --amber:#F2B705;
+    --white:#F5F7FA;
+    --gray:#8CA0B3;
+    --line:rgba(245,247,250,0.08);
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--white);
+    font-family:'Inter',Arial,sans-serif;
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -5%, rgba(27,122,67,.25), transparent 60%),
+      radial-gradient(ellipse 700px 400px at 100% 10%, rgba(242,183,5,.10), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  header{
+    position:sticky;
+    top:0;
+    z-index:30;
+    background:rgba(11,18,32,.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:16px 24px;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'Anton',sans-serif;
+    font-size:24px;
+    letter-spacing:.03em;
+  }
+  .logo .bulb{
+    width:12px;
+    height:12px;
+    border-radius:2px;
+    background:var(--amber);
+    box-shadow:0 0 12px 2px rgba(242,183,5,.7);
+  }
+  .logo span{color:var(--pitch-bright);}
+  .hero{
+    position:relative;
+    z-index:1;
+    padding:56px 24px 28px;
+    text-align:center;
+  }
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    color:var(--amber);
+    background:rgba(242,183,5,.08);
+    border:1px solid rgba(242,183,5,.25);
+    border-radius:999px;
+    padding:6px 14px;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  .dot-live{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#FF4D4D;
+    box-shadow:0 0 0 0 rgba(255,77,77,.55);
+    animation:pulse 1.6s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(255,77,77,.55);}
+    70%{box-shadow:0 0 0 7px rgba(255,77,77,0);}
+    100%{box-shadow:0 0 0 0 rgba(255,77,77,0);}
+  }
+  h1,h2,h3{
+    font-family:'Anton',sans-serif;
+    font-weight:400;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+  }
+  h1{
+    font-size:clamp(42px,7vw,78px);
+    line-height:.95;
+  }
+  .hero p{
+    max-width:620px;
+    margin:18px auto 0;
+    color:var(--gray);
+    font-size:16px;
+  }
+  .content-grid{
+    position:relative;
+    z-index:1;
+    max-width:1180px;
+    margin:0 auto;
+    padding:20px 24px 80px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 320px;
+    gap:40px;
+  }
+  .featured{
+    background:
+      linear-gradient(135deg, rgba(27,122,67,.32), rgba(242,183,5,.08)),
+      var(--card);
+    border:1px solid rgba(35,161,85,.35);
+    border-radius:var(--radius);
+    padding:28px;
+    margin-bottom:20px;
+  }
+  .article-body{
+    display:grid;
+    gap:16px;
+    margin-top:20px;
+    color:var(--gray);
+    font-size:15px;
+    line-height:1.8;
+  }
+  .article-body h3{
+    color:var(--white);
+    font-family:'Inter',sans-serif;
+    font-size:18px;
+    font-weight:800;
+    letter-spacing:0;
+    text-transform:none;
+    margin-top:4px;
+  }
+  .article-body ul{
+    display:grid;
+    gap:8px;
+    padding-left:18px;
+  }
+  .article-body li::marker{color:var(--amber);}
+  .featured-meta,.post-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    color:var(--gray);
+    font-size:12px;
+    margin-bottom:10px;
+  }
+  .tag{
+    color:var(--amber);
+    background:rgba(242,183,5,.1);
+    border:1px solid rgba(242,183,5,.25);
+    border-radius:5px;
+    padding:2px 8px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+  .featured h2{
+    font-size:34px;
+    line-height:1;
+    margin-bottom:12px;
+  }
+  .featured p,.post-card p{
+    color:var(--gray);
+    font-size:14px;
+    line-height:1.7;
+  }
+  .read-more{
+    display:inline-flex;
+    align-items:center;
+    margin-top:18px;
+    background:var(--pitch-bright);
+    color:#08170D;
+    border-radius:7px;
+    padding:10px 16px;
+    font-weight:800;
+    font-size:13px;
+  }
+  .post-list{
+    display:grid;
+    gap:16px;
+  }
+  .post-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px;
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .post-card:hover{
+    border-color:rgba(35,161,85,.55);
+    transform:translateY(-2px);
+  }
+  .post-card h3{
+    font-family:'Inter',sans-serif;
+    font-size:19px;
+    font-weight:800;
+    letter-spacing:0;
+    text-transform:none;
+    margin-bottom:8px;
+  }
+  .post-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+    color:var(--gray);
+    font-size:12px;
+  }
+  .side-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+    margin-bottom:24px;
+  }
+  .side-card h3{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:800;
+    color:var(--gray);
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    margin-bottom:16px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .side-card h3::before{
+    content:"";
+    width:4px;
+    height:14px;
+    border-radius:2px;
+    background:var(--amber);
+  }
+  .ranked{
+    display:flex;
+    gap:12px;
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .ranked:last-child{border-bottom:0;padding-bottom:0;}
+  .rank{
+    width:30px;
+    flex:0 0 30px;
+    color:rgba(245,247,250,.16);
+    font-family:'Anton',sans-serif;
+    font-size:24px;
+  }
+  .ranked-title{
+    font-size:13px;
+    font-weight:700;
+    line-height:1.35;
+  }
+  .ranked-meta{
+    color:var(--gray);
+    font-size:11px;
+    margin-top:4px;
+  }
+  .topic-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .topic-list a{
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:6px 10px;
+    color:var(--gray);
+    font-size:12px;
+    font-weight:700;
+  }
+  .topic-list a:hover{color:var(--white);border-color:var(--pitch-bright);}
+  footer{
+    position:relative;
+    z-index:1;
+    background:var(--ink-2);
+    border-top:1px solid var(--line);
+  }
+  .footer-bottom{
+    max-width:1180px;
+    margin:0 auto;
+    padding:20px 24px;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    color:var(--gray);
+    font-size:12.5px;
+  }
+  @media (max-width:920px){
+    .content-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:680px){
+    .content-grid{padding:16px 16px 56px;}
+    .featured{padding:22px;}
+    .featured h2{font-size:28px;}
+    .post-footer,.footer-bottom{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <nav class="nav wrap">
+    <a class="logo" href="index.html"><span class="bulb"></span>SPORTS<span>HUB</span></a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="eyebrow"><span class="dot-live"></span> Popular Reads</div>
+  <h1>Popular Posts</h1>
+  <p>Match guides, fixture explainers, squad notes, and tournament stories readers are opening most.</p>
+</section>
+
+<div class="content-grid">
+  <main>
+    <article class="featured" id="featuredPost"></article>
+  </main>
+
+  <aside>
+    <div class="side-card">
+      <h3>Most Viewed</h3>
+      <div id="rankedPosts"></div>
+    </div>
+    <div class="side-card">
+      <h3>Topics</h3>
+      <div class="topic-list">
+        <a href="index.html#feed">Fixtures</a>
+        <a href="index.html#feed">World Cup 2026</a>
+        <a href="index.html#feed">Channels</a>
+        <a href="index.html#feed">Lineups</a>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <div class="footer-bottom">
+    <span>&copy; 2026 SportsHub. Fixture data for informational purposes only.</span>
+    <a href="index.html">Back to fixtures</a>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script>
+  const BLOG_POSTS = POPULAR_POSTS.map((post, index) => {
+    const match = MATCHES[index % MATCHES.length];
+    const tag = index === 0 ? 'Guide' : index === 1 ? 'Rules' : index === 2 ? 'Cities' : 'Squads';
+    return {
+      ...post,
+      match,
+      tag,
+      excerpt: `${post.title} with quick context for ${match.home} vs ${match.away}, kickoff details, viewing notes, and what supporters should track before matchday.`,
+      body: [
+        `This SportsHub blog note focuses on ${post.title.toLowerCase()} for fans following the 2026 tournament. It brings the matchday details into one readable place instead of sending you away to a fixture card.`,
+        `${match.home} vs ${match.away} is one of the fixtures connected to this post. The kickoff is listed for ${match.date} at ${match.time}, with coverage notes, stadium context, and viewing information kept close to the article.`,
+        `Use the most-viewed list to jump between popular articles. Each link stays inside the blog page and opens the article attached to that popular post.`
+      ]
+    };
+  });
+
+  function getSelectedPost(){
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get('post');
+    return BLOG_POSTS.find(post => post.slug === requested) || BLOG_POSTS[0];
+  }
+
+  function postUrl(post){
+    return `popular-posts.html?post=${post.slug}`;
+  }
+
+  function renderArticle(){
+    const post = getSelectedPost();
+    document.title = `${post.title} - SportsHub`;
+    document.getElementById('featuredPost').innerHTML = `
+      <div class="featured-meta"><span class="tag">${post.tag}</span><span>${post.meta}</span><span>${post.match.date}</span></div>
+      <h2>${post.title}</h2>
+      <p>${post.excerpt}</p>
+      <div class="article-body">
+        ${post.body.map(paragraph => `<p>${paragraph}</p>`).join('')}
+        <h3>Quick Notes</h3>
+        <ul>
+          <li>Related fixture: ${post.match.home} vs ${post.match.away}</li>
+          <li>Venue: ${post.match.stadium}</li>
+          <li>Channel guide: ${post.match.channel}</li>
+        </ul>
+      </div>
+    `;
+  }
+
+  function renderRanked(){
+    document.getElementById('rankedPosts').innerHTML = BLOG_POSTS.map((post, index) => `
+      <a class="ranked" href="${postUrl(post)}">
+        <span class="rank mono">${String(index + 1).padStart(2, '0')}</span>
+        <span>
+          <span class="ranked-title">${post.title}</span>
+          <span class="ranked-meta">${post.meta}</span>
+        </span>
+      </a>
+    `).join('');
+  }
+
+  renderArticle();
+  renderRanked();
+</script>
+</body>
+</html>
