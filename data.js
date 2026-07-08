@@ -2,7 +2,7 @@
 
 const MATCHES = [
   {
-    slug: "argentina-switzerlan",
+    slug: "argentina-switzerland",
     home: "Argentina", away: "Switzerland",
     homeAbbr: "ARG", awayAbbr: "SUI",
     homeColor: "#75AADB", awayColor: "#D52B1E",
